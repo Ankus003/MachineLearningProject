@@ -7,6 +7,7 @@ import pandas as pd
 from src.exception import CustomException
 from src.logger import logging
 import dill
+from sklearn.metrics import r2_score
 
 def save_object(file_path, obj):
     try:
