@@ -17,7 +17,7 @@ from  xgboost import XGBRegressor
 from src.exception import CustomException
 from src.logger import logging
 
-from src.utils import save_object
+from src.utils import save_object, evaluate_models
 @dataclass
 class ModelTrainerConfig:
     trained_model_file_path = os.path.join('artifacts', 'model.pkl')
@@ -48,19 +48,8 @@ class ModelTrainer:
                 "CatBoosting Regressor": CatBoostRegressor(verbose=False)
             }
 
-            model_report = {}
+            model_report:dict = evaluate_models(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test, models=models)
 
-            for i in range(len(models)):
-                model = list(models.values())[i]
-                model.fit(X_train, y_train)
-
-                y_train_pred = model.predict(X_train)
-                y_test_pred = model.predict(X_test)
-
-                train_model_score = r2_score(y_train, y_train_pred)
-                test_model_score = r2_score(y_test, y_test_pred)
-
-                model_report[list(models.keys())[i]] = test_model_score
 
             best_model_score = max(model_report.values())
             best_model_name = [k for k, v in model_report.items() if v == best_model_score][0]
